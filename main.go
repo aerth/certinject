@@ -5,7 +5,6 @@ package main
 
 import (
 	"errors"
-	"flag"
 	"io/ioutil"
 	"log"
 	"os"
@@ -14,7 +13,11 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
+
 	"github.com/namecoin/ncdns/certinject"
+	flag "github.com/ogier/pflag"
+	"gopkg.in/hlandau/easyconfig.v1/adaptflag"
+	"gopkg.in/hlandau/easyconfig.v1/cflag"
 )
 
 func main() {
@@ -22,12 +25,16 @@ func main() {
 
 	var (
 		certs      []string
-		certflag   = flag.String("certs", "", "path to certificate (separate by comma)")
-		configflag = flag.String("conf", filepath.Join(getConfigDir(), "certinject.toml"), "path to config")
+		flagGroup  = cflag.NewGroup(nil, "certinject")
+		certflag   = cflag.String(flagGroup, "certs", "", "path to certificate (separate by comma. if set, skips config)")
+		configflag = cflag.String(flagGroup, "conf", filepath.Join(getConfigDir(), "certinject.toml"), "path to config")
 	)
 
+	adaptflag.AdaptWithFunc(func(info adaptflag.Info) {
+		flag.Var(info.Value, info.Name, info.Usage)
+	})
 	flag.Parse()
-	certs = listCerts(*certflag, *configflag)
+	certs = listCerts(certflag.Value(), configflag.Value())
 	if len(certs) == 0 {
 		log.Fatalln("no certificates to add")
 	}
