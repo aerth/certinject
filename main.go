@@ -15,7 +15,9 @@ import (
 	"github.com/BurntSushi/toml"
 
 	"github.com/namecoin/ncdns/certinject"
-	flag "github.com/ogier/pflag"
+	//	flag "github.com/ogier/pflag"
+	"flag"
+
 	"gopkg.in/hlandau/easyconfig.v1/adaptflag"
 	"gopkg.in/hlandau/easyconfig.v1/cflag"
 )
