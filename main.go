@@ -22,6 +22,7 @@ import (
 
 func main() {
 	log.SetFlags(0)
+	log.Println("Namecoin certinject tool")
 
 	var (
 		certs      []string
@@ -46,6 +47,7 @@ func main() {
 		}
 		certinject.InjectCert(b)
 	}
+	log.Printf("injected %v certificates", len(certs))
 }
 
 // configt config type
