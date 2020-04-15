@@ -1,4 +1,6 @@
 buildflags = -v -ldflags '-w -s'
+certinject: *.go
+	go build $(buildflags) -o $@
 certinject.exe: *.go
 	env GOOS=windows GOARCH=amd64 go build $(buildflags) -o $@
 	strip $@
@@ -10,4 +12,6 @@ certinject-osx-amd64: *.go
 	#strip $@
 all: certinject.exe certinject-linux-amd64 certinject-osx-amd64
 clean:
-	rm -vf certinject.exe certinject-linux-amd64 certinject-osx-amd64
+	rm -vf certinject.exe certinject-linux-amd64 certinject-osx-amd64 certinject
+PHONY += all
+PHONY += clean
