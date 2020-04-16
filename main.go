@@ -1,4 +1,4 @@
-// Copyright 2020 Namecoin Developers LGPLv3+
+// Copyright 2020 Namecoin Developers GPLv3+
 
 // Command certinject injects certificates into all configured trust stores
 package main
