@@ -6,7 +6,7 @@ require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
-	github.com/hlandau/xlog v1.0.0 // indirect
+	github.com/hlandau/xlog v1.0.0
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/namecoin/ncdns v0.0.10
 	github.com/ogier/pflag v0.0.1
@@ -15,4 +15,5 @@ require (
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6 // indirect
 	gopkg.in/hlandau/configurable.v1 v1.0.1 // indirect
 	gopkg.in/hlandau/easyconfig.v1 v1.0.17
+	gopkg.in/hlandau/svcutils.v1 v1.0.10 // indirect
 )

@@ -28,4 +28,6 @@ gopkg.in/hlandau/configurable.v1 v1.0.1 h1:rH8g/WXZu2b/eyLagvsqUf9q5mO66hfGHW5L4
 gopkg.in/hlandau/configurable.v1 v1.0.1/go.mod h1:rlyQpcii/QkMGudMSMoe3jjHAgqLZuqg0hQkiUcNfF8=
 gopkg.in/hlandau/easyconfig.v1 v1.0.17 h1:b35zzqFGh002seeNzseuuXWLJDS0AaL6Isvgx6bsTuE=
 gopkg.in/hlandau/easyconfig.v1 v1.0.17/go.mod h1:fljDHM+/VAXpyEN/45q6RFtcOFnUaF1Wgr6p4LLICoU=
+gopkg.in/hlandau/svcutils.v1 v1.0.10 h1:eIasSJy56y3H3rJ0US4EJURTAfHXItiehMxZRRs7TrU=
+gopkg.in/hlandau/svcutils.v1 v1.0.10/go.mod h1:aAoYFMVAq2ck6z8av+FBxzX/qX1ehmUIc5PgGBf+P3I=
 gopkg.in/yaml.v2 v2.2.2/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=

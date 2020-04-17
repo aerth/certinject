@@ -4,7 +4,6 @@
 package main
 
 import (
-	"errors"
 	"io/ioutil"
 	"log"
 	"os"
@@ -12,44 +11,41 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/BurntSushi/toml"
-
+	"github.com/hlandau/xlog"
 	"github.com/namecoin/ncdns/certinject"
-	//	flag "github.com/ogier/pflag"
-	"flag"
-
-	"gopkg.in/hlandau/easyconfig.v1/adaptflag"
+	easyconfig "gopkg.in/hlandau/easyconfig.v1"
 	"gopkg.in/hlandau/easyconfig.v1/cflag"
 )
 
 func main() {
-	log.SetFlags(0)
-	log.Println("Namecoin certinject tool")
-
 	var (
-		certs      []string
-		flagGroup  = cflag.NewGroup(nil, "certinject")
-		certflag   = cflag.String(flagGroup, "certs", "", "path to certificate (separate by comma. if set, skips config)")
-		configflag = cflag.String(flagGroup, "conf", filepath.Join(getConfigDir(), "certinject.toml"), "path to config")
+		log, _    = xlog.New("certinject")
+		flagGroup = cflag.NewGroup(nil, "certinject")
+		certflag  = cflag.String(flagGroup, "certs", "", "path to certificate (separate by comma. if set, skips config)")
 	)
 
-	adaptflag.AdaptWithFunc(func(info adaptflag.Info) {
-		flag.Var(info.Value, info.Name, info.Usage)
-	})
-	flag.Parse()
-	certs = listCerts(certflag.Value(), configflag.Value())
-	if len(certs) == 0 {
-		log.Fatalln("no certificates to add")
+	// read config
+	config := easyconfig.Configurator{
+		ProgramName: "certinject",
 	}
-	log.Printf("injecting %v certificates", len(certs))
+	config.ParseFatal(nil)
+
+	certs := listCerts(certflag.Value())
+	if len(certs) == 0 {
+		log.Fatal("no certificates to add")
+	}
+
+	log.Debugf("injecting %v certificates", len(certs))
 	for _, cert := range certs {
+		log.Debugf("reading certificate: %q", cert)
 		b, err := ioutil.ReadFile(cert)
 		if err != nil {
 			log.Fatalf("fatal error while injecting %q certificate: \n\t%v", cert, err)
 		}
 		certinject.InjectCert(b)
+		log.Debugf("injected certificate: %q", cert)
 	}
-	log.Printf("injected %v certificates", len(certs))
+	log.Debugf("injected %v certificates", len(certs))
 }
 
 // configt config type
@@ -57,35 +53,12 @@ type configt struct {
 	Certs []string
 }
 
-func listCerts(certflag, configflag string) (certs []string) {
-	if certflag == "" {
-		// no -certs flag, parse TOML config
-		config, err := readConfigCerts(configflag)
-		if err != nil {
-			if os.IsNotExist(err) {
-				log.Fatalf("fatal: there is no toml config file at %q, "+
-					"and none specified with %q flag",
-					configflag, "certs")
-			} else {
-				log.Fatalln("error parsing config:", err)
-			}
-		}
-		certs = config.Certs
-	} else {
-		// read -certs flag for comma separated certificate paths
-		certs = strings.Split(certflag, ",")
+func listCerts(certificates string) (certs []string) {
+	certificates = strings.TrimSpace(certificates)
+	if certificates == "" {
+		return nil
 	}
-	return certs
-}
-
-// readConfigCerts parses a toml file and returns a list of paths to certificate files
-func readConfigCerts(path string) (configt, error) {
-	if path == "" {
-		return configt{}, errors.New("empty config path")
-	}
-	var config = configt{}
-	_, err := toml.DecodeFile(path, &config)
-	return config, err
+	return strings.Split(certificates, ",")
 }
 
 // getConfigDir always will return a valid directory to look for default config file
