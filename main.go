@@ -5,10 +5,6 @@ package main
 
 import (
 	"io/ioutil"
-	"log"
-	"os"
-	"path/filepath"
-	"runtime"
 	"strings"
 
 	"github.com/hlandau/xlog"
@@ -59,20 +55,4 @@ func listCerts(certificates string) (certs []string) {
 		return nil
 	}
 	return strings.Split(certificates, ",")
-}
-
-// getConfigDir always will return a valid directory to look for default config file
-func getConfigDir() string {
-	configdir, err := os.UserConfigDir()
-	if err != nil {
-		log.Println("error looking for user config dir, using current working dir:", err)
-		return ""
-	}
-
-	subpath := "Namecoin"
-	if runtime.GOOS != "darwin" && runtime.GOOS != "windows" {
-		subpath = "namecoin"
-	}
-
-	return filepath.Join(configdir, subpath)
 }
