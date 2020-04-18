@@ -1,3 +1,2 @@
-# list of certificates to inject into all configured trust stores
 [certinject]
-certs="example.pem,foo,./bar,/tmp/foo"
+cert="testdata/badssl.com.der.cert"
