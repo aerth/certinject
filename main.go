@@ -4,8 +4,9 @@
 package main
 
 import (
+	"encoding/pem"
 	"io/ioutil"
-	"strings"
+	"os"
 
 	"github.com/hlandau/xlog"
 	"github.com/namecoin/ncdns/certinject"
@@ -13,11 +14,12 @@ import (
 	"gopkg.in/hlandau/easyconfig.v1/cflag"
 )
 
+var log, _ = xlog.New("certinject")
+
 func main() {
 	var (
-		log, _    = xlog.New("certinject")
 		flagGroup = cflag.NewGroup(nil, "certinject")
-		certflag  = cflag.String(flagGroup, "certs", "", "path to certificate (separate by comma. if set, skips config)")
+		certflag  = cflag.String(flagGroup, "cert", "", "path to certificate to inject into trust store")
 	)
 
 	// read config
@@ -26,33 +28,16 @@ func main() {
 	}
 	config.ParseFatal(nil)
 
-	certs := listCerts(certflag.Value())
-	if len(certs) == 0 {
-		log.Fatal("no certificates to add")
+	cert := os.ExpandEnv(certflag.Value())
+	log.Debugf("reading certificate: %q", cert)
+	b, err := ioutil.ReadFile(cert)
+	if err != nil {
+		log.Fatalf("fatal error while injecting %q certificate: \n\t%v", cert, err)
 	}
-
-	log.Debugf("injecting %v certificates", len(certs))
-	for _, cert := range certs {
-		log.Debugf("reading certificate: %q", cert)
-		b, err := ioutil.ReadFile(cert)
-		if err != nil {
-			log.Fatalf("fatal error while injecting %q certificate: \n\t%v", cert, err)
-		}
-		certinject.InjectCert(b)
-		log.Debugf("injected certificate: %q", cert)
+	if p, err := pem.Decode(b); err == nil {
+		log.Debugf("user provided PEM encoded certificate, extracting DER bytes")
+		b = p.Bytes
 	}
-	log.Debugf("injected %v certificates", len(certs))
-}
-
-// configt config type
-type configt struct {
-	Certs []string
-}
-
-func listCerts(certificates string) (certs []string) {
-	certificates = strings.TrimSpace(certificates)
-	if certificates == "" {
-		return nil
-	}
-	return strings.Split(certificates, ",")
+	certinject.InjectCert(b)
+	log.Debugf("injected certificate: %q", cert)
 }
