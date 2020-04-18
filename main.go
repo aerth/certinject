@@ -7,6 +7,7 @@ import (
 	"encoding/pem"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/hlandau/xlog"
 	"github.com/namecoin/ncdns/certinject"
@@ -27,12 +28,14 @@ func main() {
 		ProgramName: "certinject",
 	}
 	config.ParseFatal(nil)
-
-	cert := os.ExpandEnv(certflag.Value())
+	cert := strings.TrimSpace(os.ExpandEnv(certflag.Value()))
+	if cert == "" {
+		log.Fatal("no certificate to add")
+	}
 	log.Debugf("reading certificate: %q", cert)
 	b, err := ioutil.ReadFile(cert)
 	if err != nil {
-		log.Fatalf("fatal error while injecting %q certificate: \n\t%v", cert, err)
+		log.Fatale(err, "error reading certificate")
 	}
 	if p, err := pem.Decode(b); err == nil {
 		log.Debugf("user provided PEM encoded certificate, extracting DER bytes")
