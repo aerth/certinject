@@ -1,0 +1,9 @@
+language: go
+os: windows
+go:
+  - 1.13.x
+
+script:
+  - go build -o certinject.exe
+  - ./certinject.exe -certinject.cert testdata/badssl.com.der.cert -certstore.cryptoapi
+  - powershell -Command Invoke-WebRequest -Uri "https://self-signed.badssl.com/" -Method GET -UseBasicParsing
