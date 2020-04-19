@@ -5,5 +5,4 @@ go:
 
 script:
   - go build -o certinject.exe
-  - ./certinject.exe -certinject.cert testdata/badssl.com.der.cert -certstore.cryptoapi
-  - powershell -Command Invoke-WebRequest -Uri "https://self-signed.badssl.com/" -Method GET -UseBasicParsing
+  - powershell -ExecutionPolicy Unrestricted -File "testdata/ci-failtest.ps1"
